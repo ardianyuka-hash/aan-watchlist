@@ -82,6 +82,16 @@ textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-rad
 .empty{padding:28px;text-align:center;color:var(--mute)}
 .warn{border-left:3px solid var(--g2i);background:var(--g2);color:var(--ink);padding:10px 12px;border-radius:8px;font-size:13px;margin-bottom:14px}
 .meth p,.meth li{font-size:13.5px;max-width:900px}
+a{color:var(--acc)}
+.btn.upd{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+.btn.pri{background:var(--up);border-color:var(--up);color:#fff;font-weight:600;text-decoration:none;display:inline-block}
+.newbar{display:none;background:var(--upbg);color:var(--up);border-bottom:1px solid var(--line);padding:9px 20px;font-weight:600;align-items:center;gap:12px;flex-wrap:wrap}
+.newbar.on{display:flex}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
+.modal.on{display:flex}
+.mbox{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;max-width:520px;width:100%;max-height:90vh;overflow:auto}
+.steps{padding-left:20px;font-size:13.5px}.steps li{margin:5px 0}
+.spin{display:inline-block;animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
 @media (max-width:640px){header,main,nav{padding-left:16px;padding-right:16px}}
 </style>
 </head>
@@ -90,8 +100,26 @@ textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-rad
   <h1>AAN Watchlist · <span>ARA</span> 2026</h1>
   <div class="meta" id="meta"></div>
   <div class="sp"></div>
+  <button class="btn upd" id="upd" title="Perbarui data harian">⟳ Update data</button>
   <button class="btn" id="theme" title="Ganti tema">◐ Tema</button>
 </header>
+<div class="newbar" id="newbar"></div>
+<div class="modal" id="modal"><div class="mbox">
+  <button class="btn x" id="m-x">✕</button>
+  <h2 style="margin:0 0 6px">Update data harian</h2>
+  <div class="note" id="m-stat"></div>
+  <ol class="steps">
+    <li>Klik <b>Jalankan update di GitHub</b> (login sebagai pemilik repo bila diminta).</li>
+    <li>Di halaman GitHub klik <b>Run workflow</b> → <b>Run workflow</b> (tombol hijau).</li>
+    <li>Kembali ke sini. Proses ±3–5 menit; halaman ini memantau dan memberi tahu saat data baru siap.</li>
+  </ol>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a class="btn pri" id="m-run" target="_blank" rel="noopener" href="https://github.com/ardianyuka-hash/aan-watchlist/actions/workflows/update.yml">Jalankan update di GitHub ↗</a>
+    <button class="btn" id="m-cek">Cek data baru</button>
+  </div>
+  <div class="note" id="m-poll" style="margin-top:10px"></div>
+  <div class="note" style="margin-top:12px">Otomatis: setiap hari bursa (Senin–Jumat) pukul 18:00 WIB data diperbarui sendiri. Di PC juga bisa lewat pintasan “Update AAN Watchlist”.</div>
+</div></div>
 <nav id="nav">
   <button data-t="kand" class="on">Kandidat hari ini <span class="cnt" id="c-kand"></span></button>
   <button data-t="watch">Watchlist saya <span class="cnt" id="c-watch"></span></button>
@@ -357,6 +385,42 @@ table($('#tb-bin'),[{k:'b',h:'Skor',l:1},{k:'n',h:'Saham-hari',f:r=>nf.format(r.
 const ps=Object.entries(D.pre_share).filter(([k])=>k!=='ARA0').sort((a,b)=>b[1]-a[1]);
 $('#pre').innerHTML=ps.map(([k,v])=>`<div style="display:flex;align-items:center;gap:8px;margin:4px 0"><span style="width:56px">${badge(k)}</span><span class="bar" style="margin:0;width:${v*100*1.4}%"></span><span>${pct(v,0)}</span></div>`).join('');
 })();
+
+/* UPDATE DATA */
+const ONLINE='https://ardianyuka-hash.github.io/aan-watchlist/';
+const isOnline=location.protocol.startsWith('http')&&!/^(localhost|127\.)/.test(location.hostname);
+async function cekStatus(){
+  try{const r=await fetch('status.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return null;return await r.json()}catch(e){return null}
+}
+const muatUlang=()=>{location.href=location.pathname+'?v='+Date.now()};
+function tandaiBaru(s){
+  $('#newbar').innerHTML=`✔ Data baru tersedia (sampai ${s.data_sampai}, dibuat ${esc(s.dibuat)}) <button class="btn pri" id="nb-r">Muat ulang</button>`;
+  $('#newbar').classList.add('on');$('#nb-r').onclick=muatUlang;
+  $('#m-poll').innerHTML=`<b style="color:var(--up)">✔ Data baru siap.</b> <button class="btn pri" onclick="location.href=location.pathname+'?v='+Date.now()">Muat ulang sekarang</button>`;
+}
+let pollT=null;
+async function cekSekali(manual){
+  const s=await cekStatus();
+  if(!s){if(manual)$('#m-poll').textContent='Tidak bisa mengecek (buka versi online).';return false}
+  if(s.dibuat!==D.dibuat){tandaiBaru(s);clearInterval(pollT);pollT=null;return true}
+  if(manual&&!pollT)$('#m-poll').textContent=`Belum ada data baru (terakhir dibuat ${s.dibuat}).`;
+  return false;
+}
+function mulaiPantau(){
+  if(pollT)return;const t0=Date.now();
+  const tick=async()=>{const m=Math.floor((Date.now()-t0)/1000);
+    if(await cekSekali(false))return;
+    if(m>900){clearInterval(pollT);pollT=null;$('#m-poll').innerHTML='Belum ada data baru setelah 15 menit. Cek status di <a target="_blank" href="https://github.com/ardianyuka-hash/aan-watchlist/actions">GitHub Actions</a> (mungkin gagal unduh Yahoo / hari libur bursa).';return}
+    $('#m-poll').innerHTML=`<span class="spin">⟳</span> Memantau data baru… ${Math.floor(m/60)}:${String(m%60).padStart(2,'0')} (cek tiap 30 detik)`};
+  pollT=setInterval(tick,30000);tick();
+}
+$('#m-stat').innerHTML=`Data sekarang: sampai <b>${D.data_sampai}</b>, dibuat ${esc(D.dibuat)}.`+(isOnline?'':` <br><b>Anda membuka salinan lokal.</b> Tombol update bekerja di <a href="${ONLINE}" target="_blank">versi online</a>.`);
+$('#upd').onclick=()=>{$('#modal').classList.add('on');if(isOnline)cekSekali(true)};
+$('#m-x').onclick=()=>$('#modal').classList.remove('on');
+$('#modal').onclick=e=>{if(e.target.id==='modal')$('#modal').classList.remove('on')};
+$('#m-run').onclick=()=>{if(isOnline)mulaiPantau()};
+$('#m-cek').onclick=()=>cekSekali(true);
+if(isOnline)cekSekali(false);   // halaman lama dari cache browser? langsung beri tahu
 
 saveW();renderKand();renderWatch();renderHist();
 </script>

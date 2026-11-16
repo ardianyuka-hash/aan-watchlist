@@ -15,7 +15,7 @@ Pakai:
   py watchlist_ara.py --minval 5e8 # filter nilai transaksi 20h (default Rp1 M)
 """
 import argparse, importlib.util, json, sys, time, webbrowser
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import numpy as np
@@ -24,6 +24,18 @@ import pandas as pd
 BASE = Path(__file__).resolve().parent
 TRADING = BASE.parent
 SCRIPT = TRADING / "HASIL ANALISA" / "script"
+VENDOR = BASE / "vendor"   # salinan untuk GitHub Actions (di PC dipakai file asli proyek bila ada)
+WIB = timezone(timedelta(hours=7))
+MIN_SAHAM = 600            # pengaman: unduhan Yahoo yang gagal sebagian tidak boleh menimpa dashboard
+
+
+def src(*cands):
+    for c in cands:
+        if c.exists():
+            return c
+    raise FileNotFoundError(cands[-1])
+
+
 DATA = BASE / "data"
 HASIL = BASE / "hasil"
 PRICES = DATA / "prices.parquet"
@@ -32,7 +44,7 @@ YEAR0 = pd.Timestamp("2026-01-01")
 SPLIT = pd.Timestamp("2026-07-01")  # IS: Jan–Jun 2026, OOS: Jul 2026 – sekarang
 
 # --- impor indikator proyek apa adanya
-_spec = importlib.util.spec_from_file_location("bt", SCRIPT / "backtest.py")
+_spec = importlib.util.spec_from_file_location("bt", src(SCRIPT / "backtest.py", VENDOR / "backtest.py"))
 bt = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(bt)
 
 # Indikator yang dipakai (nama di backtest.py -> kode singkat)
@@ -73,11 +85,12 @@ FEATS = list(LABEL)
 
 # ---------------------------------------------------------------- data
 def load_codes():
-    t = (TRADING / "screener-cangkang" / "idx_codes.txt").read_text().split()
+    t = src(TRADING / "screener-cangkang" / "idx_codes.txt", VENDOR / "idx_codes.txt").read_text().split()
     codes = t[0::2]
-    pp = set((SCRIPT / "pp_codes.txt").read_text().split())
+    pp = set(src(SCRIPT / "pp_codes.txt", VENDOR / "pp_codes.txt").read_text().split())
     names = {}
     nf = Path.home() / "idx_downloader" / "emiten_cache.csv"
+    nf = nf if nf.exists() else VENDOR / "emiten.csv"
     if nf.exists():
         n = pd.read_csv(nf, encoding="utf-8-sig")
         names = dict(zip(n.kode, n.nama))
@@ -233,6 +246,7 @@ def publish(last_day):
     if "nothing to commit" in r.stdout:
         print("GitHub: tidak ada perubahan.")
         return
+    run("pull", "--rebase", "-X", "theirs")  # GitHub Actions mungkin sudah update duluan; versi PC menang
     r = run("push")
     print("GitHub: terkirim ✔ (halaman online ±1 menit lagi)" if r.returncode == 0 else "GitHub GAGAL: " + r.stderr[-300:])
 
@@ -270,6 +284,9 @@ def main():
         tail = f.tail(60)
         spark[code] = [tail.index.strftime("%Y-%m-%d").tolist(), tail.c.round(2).tolist(), tail.ara.astype(int).tolist()]
     P = pd.concat(F, ignore_index=True)
+    n_now = P[P.date == last_day].code.nunique()
+    if n_now < MIN_SAHAM:
+        sys.exit(f"GAGAL: hanya {n_now} saham punya data {last_day.date()} (< {MIN_SAHAM}). Dashboard tidak ditimpa — coba lagi nanti.")
     print(f"{P.code.nunique()} saham, {len(P):,} baris — {time.time() - t0:.0f} dtk")
 
     ok = (P.val20 >= a.minval) & (P.c > a.minpx) & (P.i >= 60)
@@ -327,7 +344,7 @@ def main():
     pre_share = {k: float(np.mean([k in e["pre"] for e in events])) if events else 0 for k in FEATS}
 
     out = dict(
-        dibuat=datetime.now().strftime("%Y-%m-%d %H:%M"), data_sampai=str(last_day.date()),
+        dibuat=datetime.now(WIB).strftime("%Y-%m-%d %H:%M WIB"), data_sampai=str(last_day.date()),
         minval=a.minval, minpx=a.minpx, n_saham=int(P.code.nunique()),
         ihsg=dict(close=float(ihsg.iloc[-1]), chg=float(ihsg.iloc[-1] / ihsg.iloc[-2] - 1), atas_ma50=bool(ix_ok.iloc[-1])),
         label=LABEL, grup=GROUP, bobot=W,
@@ -344,6 +361,7 @@ def main():
     f2 = BASE / "watchlist_ara_2026.html"
     f2.write_text(html, encoding="utf-8")
     (BASE / "index.html").write_text(html, encoding="utf-8")  # halaman GitHub Pages
+    (BASE / "status.json").write_text(json.dumps(dict(data_sampai=out["data_sampai"], dibuat=out["dibuat"])), encoding="utf-8")
     if a.publish:
         publish(last_day)
     nk = sum(1 for c in cand if c["skor"] > 0 and c["likuid"])

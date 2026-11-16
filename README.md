@@ -25,3 +25,9 @@ Dashboard kandidat ARA saham BEI, memakai indikator proyek trading
 - Risiko: saham yang sudah close ARA praktis tidak bisa dibeli; peluang ARA ≠ profit (lihat tab Metodologi).
 
 File: `watchlist_ara.py` (mesin), `template.html` (tampilan), `data/prices.parquet` (cache, boleh ditimpa).
+
+## Update otomatis (GitHub Actions)
+- `.github/workflows/update.yml` jalan sendiri Senin–Jumat 18:00 WIB, dan bisa dipicu dari tombol **⟳ Update data** di aplikasi
+  (membuka halaman *Run workflow* di GitHub; halaman lalu memantau `status.json` dan memberi tahu saat data baru siap).
+- Di server GitHub dipakai salinan `vendor/` (backtest.py, daftar kode, nama emiten). Kalau `backtest.py` asli di proyek
+  trading diubah, salin ulang ke `vendor/backtest.py` supaya hasil online sama.
