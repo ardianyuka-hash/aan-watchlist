@@ -1,4 +1,4 @@
-# AAN Watchlist · ARA 2026
+# AAN Watchlist
 
 Online: **https://ardianyuka-hash.github.io/aan-watchlist/**
 
