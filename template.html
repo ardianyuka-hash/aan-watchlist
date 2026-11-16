@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AAN Watchlist · ARA 2026</title>
+<style>
+:root{
+  --bg:#f6f7f9;--panel:#fff;--ink:#16191f;--mute:#5d6673;--line:#e3e6eb;--soft:#eef1f5;
+  --acc:#0b6bcb;--up:#0a8a4a;--upbg:#e3f5ea;--dn:#c62f2f;--dnbg:#fbe9e9;--ara:#b3261e;--arabg:#fde7e4;
+  --g1:#e8f0fe;--g1i:#1a4fa3;--g2:#fff1db;--g2i:#8a5300;--star:#e0a100;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1216;--panel:#171b21;--ink:#e7eaee;--mute:#99a2ae;--line:#2a3039;--soft:#1f252d;
+  --acc:#5aa7ff;--up:#3ccf83;--upbg:#12301f;--dn:#ff7b72;--dnbg:#3a1a1a;--ara:#ff8a7a;--arabg:#3b1915;
+  --g1:#1b2b45;--g1i:#9cc2ff;--g2:#3a2c12;--g2i:#ffc76b;}}
+:root[data-theme="dark"]{
+  --bg:#0f1216;--panel:#171b21;--ink:#e7eaee;--mute:#99a2ae;--line:#2a3039;--soft:#1f252d;
+  --acc:#5aa7ff;--up:#3ccf83;--upbg:#12301f;--dn:#ff7b72;--dnbg:#3a1a1a;--ara:#ff8a7a;--arabg:#3b1915;
+  --g1:#1b2b45;--g1i:#9cc2ff;--g2:#3a2c12;--g2i:#ffc76b;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+header{background:var(--panel);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center}
+h1{font-size:20px;margin:0;letter-spacing:-.2px}
+h1 span{color:var(--ara)}
+.meta{color:var(--mute);font-size:13px;display:flex;gap:16px;flex-wrap:wrap}
+.meta b{color:var(--ink);font-weight:600}
+.sp{flex:1}
+button,select,input{font:inherit;color:inherit}
+.btn{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+.btn:hover{border-color:var(--acc)}
+nav{display:flex;gap:4px;padding:0 20px;background:var(--panel);border-bottom:1px solid var(--line);overflow-x:auto}
+nav button{background:none;border:0;border-bottom:2px solid transparent;padding:11px 14px;cursor:pointer;color:var(--mute);white-space:nowrap;font-weight:500}
+nav button.on{color:var(--ink);border-color:var(--acc)}
+nav .cnt{background:var(--soft);border-radius:10px;padding:0 7px;font-size:12px;margin-left:4px}
+main{padding:16px 20px 40px;max-width:1500px;margin:0 auto}
+.tab{display:none}.tab.on{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.card h2{font-size:15px;margin:0 0 10px}
+.note{color:var(--mute);font-size:13px}
+.filters{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.filters label{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--mute)}
+.filters input[type=text],.filters input[type=number],.filters select{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px;color:var(--ink)}
+.filters input[type=number]{width:84px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{border:1px solid var(--line);background:var(--bg);border-radius:14px;padding:3px 10px;font-size:12px;cursor:pointer;user-select:none}
+.chip.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{position:sticky;top:0;background:var(--soft);font-weight:600;color:var(--mute);cursor:pointer;user-select:none;font-size:12px}
+th.l,td.l{text-align:left}
+th.sorted{color:var(--ink)}
+tbody tr:hover{background:var(--soft)}
+tbody tr{cursor:pointer}
+.kode{font-weight:700;letter-spacing:.3px}
+.nama{color:var(--mute);font-size:11px;max-width:190px;overflow:hidden;text-overflow:ellipsis;display:block}
+.up{color:var(--up)}.dn{color:var(--dn)}
+.b{display:inline-block;border-radius:6px;padding:1px 6px;font-size:11px;margin:1px 2px 1px 0;font-weight:600}
+.b.g1{background:var(--g1);color:var(--g1i)}
+.b.g2{background:var(--g2);color:var(--g2i)}
+.b.ara{background:var(--arabg);color:var(--ara)}
+.b.pp{background:var(--soft);color:var(--mute);font-weight:500}
+.star{background:none;border:0;cursor:pointer;font-size:17px;color:var(--mute);padding:0 2px;line-height:1}
+.star.on{color:var(--star)}
+.bar{display:inline-block;height:7px;border-radius:4px;background:var(--acc);vertical-align:middle;margin-left:6px;opacity:.75}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:14px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi .v{font-size:22px;font-weight:700;margin-top:2px}
+.kpi .s{color:var(--mute);font-size:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:900px){.grid2{grid-template-columns:1fr}}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(460px,100%);background:var(--panel);border-left:1px solid var(--line);box-shadow:-8px 0 30px rgba(0,0,0,.18);transform:translateX(105%);transition:transform .2s;z-index:10;overflow-y:auto;padding:18px}
+.drawer.on{transform:none}
+.drawer h3{margin:0;font-size:22px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin:12px 0;font-size:13px}
+.kv div span{color:var(--mute);display:block;font-size:12px}
+.x{position:absolute;right:14px;top:12px}
+ul.sig{padding-left:18px;margin:6px 0}
+ul.sig li{margin:3px 0}
+textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:6px;font:inherit;font-size:12px}
+.empty{padding:28px;text-align:center;color:var(--mute)}
+.warn{border-left:3px solid var(--g2i);background:var(--g2);color:var(--ink);padding:10px 12px;border-radius:8px;font-size:13px;margin-bottom:14px}
+.meth p,.meth li{font-size:13.5px;max-width:900px}
+@media (max-width:640px){header,main,nav{padding-left:16px;padding-right:16px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>AAN Watchlist · <span>ARA</span> 2026</h1>
+  <div class="meta" id="meta"></div>
+  <div class="sp"></div>
+  <button class="btn" id="theme" title="Ganti tema">◐ Tema</button>
+</header>
+<nav id="nav">
+  <button data-t="kand" class="on">Kandidat hari ini <span class="cnt" id="c-kand"></span></button>
+  <button data-t="watch">Watchlist saya <span class="cnt" id="c-watch"></span></button>
+  <button data-t="hist">Riwayat ARA 2026 <span class="cnt" id="c-hist"></span></button>
+  <button data-t="stat">Statistik indikator</button>
+  <button data-t="meth">Metodologi</button>
+</nav>
+<main>
+<!-- KANDIDAT -->
+<section class="tab on" id="t-kand">
+  <div class="kpis" id="kpis"></div>
+  <div class="card">
+    <div class="filters">
+      <label>Cari <input type="text" id="f-q" placeholder="kode / nama" size="12"></label>
+      <label>Papan <select id="f-papan"><option value="">Semua</option><option>Pengembangan</option><option>LQ45</option><option>Lainnya</option></select></label>
+      <label>Nilai trx 20h <select id="f-val"><option value="0">Semua</option><option value="5e8">≥ Rp500 jt</option><option value="1e9" selected>≥ Rp1 M</option><option value="5e9">≥ Rp5 M</option><option value="2e10">≥ Rp20 M</option></select></label>
+      <label>Harga ≥ <input type="number" id="f-px" value="50" min="0"></label>
+      <label>Skor ≥ <input type="number" id="f-sk" value="0.01" step="0.5" min="0"></label>
+      <label><input type="checkbox" id="f-noara"> Sembunyikan yang sudah ARA hari ini</label>
+    </div>
+    <div class="chips" id="f-chips"></div>
+    <div class="note" style="margin-top:8px">Klik chip untuk mewajibkan indikator (semua yang dipilih harus menyala). Klik baris untuk rincian. ☆ = tambah ke watchlist.</div>
+  </div>
+  <div class="tw"><table id="tb-kand"></table></div>
+</section>
+<!-- WATCHLIST -->
+<section class="tab" id="t-watch">
+  <div class="card">
+    <div class="filters">
+      <label>Tambah kode <input type="text" id="w-add" placeholder="mis. BRMS, ESIP" size="22"></label>
+      <button class="btn" id="w-addb">Tambah</button>
+      <button class="btn" id="w-csv">Unduh CSV</button>
+      <button class="btn" id="w-clear">Kosongkan</button>
+    </div>
+    <div class="note" style="margin-top:8px">Watchlist & catatan tersimpan di browser ini (localStorage). Data harga ikut diperbarui setiap kali dashboard dibuat ulang.</div>
+  </div>
+  <div class="tw"><table id="tb-watch"></table></div>
+</section>
+<!-- RIWAYAT -->
+<section class="tab" id="t-hist">
+  <div class="grid2">
+    <div class="card"><h2>Jumlah ARA per bulan (2026)</h2><div id="ch-month"></div></div>
+    <div class="card"><h2>Paling sering ARA di 2026</h2><div id="top-ara"></div></div>
+  </div>
+  <div class="card">
+    <div class="filters">
+      <label>Cari kode <input type="text" id="h-q" size="10"></label>
+      <label>Bulan <select id="h-m"><option value="">Semua</option></select></label>
+      <label>Papan <select id="h-papan"><option value="">Semua</option><option>Pengembangan</option><option>LQ45</option><option>Lainnya</option></select></label>
+      <label><input type="checkbox" id="h-liq"> Hanya likuid (nilai trx 20h H-1 ≥ batas)</label>
+      <label><input type="checkbox" id="h-first"> Hanya ARA pertama (bukan beruntun)</label>
+    </div>
+  </div>
+  <div class="tw"><table id="tb-hist"></table></div>
+</section>
+<!-- STAT -->
+<section class="tab" id="t-stat">
+  <div class="card"><h2>Validasi out-of-sample skor ARA</h2><div id="val"></div></div>
+  <div class="card"><h2>Peluang ARA per indikator — seluruh 2026</h2>
+    <div class="note" id="lift-note"></div>
+    <div class="tw" style="margin-top:10px"><table id="tb-lift"></table></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h2>Peluang ARA per kelompok skor (2026)</h2><div class="tw"><table id="tb-bin"></table></div></div>
+    <div class="card"><h2>Indikator yang menyala H-1 sebelum ARA</h2><div class="note">Dari semua kejadian ARA 2026: berapa persen sudah didahului indikator ini sehari sebelumnya.</div><div id="pre"></div></div>
+  </div>
+</section>
+<!-- METODOLOGI -->
+<section class="tab meth" id="t-meth">
+  <div class="card">
+  <h2>Cara kerja</h2>
+  <ol>
+    <li><b>Data:</b> OHLCV harian seluruh emiten BEI dari Yahoo Finance (<code>.JK</code>) + IHSG, sejak Okt 2024 (warm-up MA200/Ichimoku).</li>
+    <li><b>Indikator:</b> dihitung langsung dengan <code>indicators()</code> dan <code>signals()</code> dari <code>HASIL ANALISA/script/backtest.py</code> (Van Tharp/LeBeau, Mega Profit, Ichimoku), ditambah <b>Aturan A</b> (RSI5&lt;20 &amp; close&gt;MA200) dan <b>Aturan B</b> (close &gt; high 55h, volume ≥3× avg20, IHSG &gt; MA50) dari <code>Pengembangan_Edge_RSI_Breakout.xlsx</code>. Ditambah 4 fitur perilaku harga: ARA hari ini, ARA dalam 20h, naik ≥10%, volume ≥3×.</li>
+    <li><b>ARA:</b> batas dari harga penutupan kemarin — ≤Rp200: 35%, Rp200–5.000: 25%, &gt;Rp5.000: 20% — dibulatkan ke bawah sesuai fraksi harga (1/2/5/10/25). Hari dianggap ARA bila close ≥ harga ARA (atau kenaikan ≥ batas −1%, sama dengan <code>engine.py</code>).</li>
+    <li><b>Lift:</b> untuk tiap indikator, peluang saham ARA dalam 5 hari bursa berikutnya dibagi peluang dasar (semua hari saham likuid). Hanya hari dengan nilai transaksi 20h ≥ batas dan harga &gt; batas.</li>
+    <li><b>Skor ARA</b> = Σ log2(lift 5h) untuk indikator yang menyala dan lift &gt; 1 (minimal 30 sampel). Skor 1 ≈ peluang 2× dasar per indikator; indikator saling berkorelasi, jadi skor <i>bukan</i> probabilitas — gunakan kolom “Peluang ARA 5h” (empiris per kelompok skor).</li>
+    <li><b>Validasi:</b> bobot dihitung hanya dari Jan–Jun 2026, lalu daftar top-N harian diuji Jul 2026 – sekarang (tab Statistik).</li>
+  </ol>
+  <h2>Catatan risiko (dari riset proyek sendiri)</h2>
+  <ul>
+    <li>Backtest Papan Pengembangan: saat saham sudah close di ARA, antrean jual kosong → praktis <b>tidak bisa dibeli</b>. BSJP tanpa hari ARA edge-nya ±0,5% dan habis oleh fee + 1 tick.</li>
+    <li>Pola “lotre”: rata-rata positif, median negatif. Peluang ARA tinggi ≠ untung — kolom “Naik maks 5h (median)” memberi gambaran ruang gerak, belum termasuk turun.</li>
+    <li>Tidak ada varian PP yang lolos uji in-sample di riset sebelumnya; hasil sangat tergantung rezim (2025–2026 euforia small cap).</li>
+    <li>Saham Papan Pemantauan Khusus (full call auction, batas 10%) dan aksi korporasi (right issue/split pada data Yahoo) bisa menimbulkan ARA palsu/terlewat.</li>
+    <li>Data harian Yahoo bisa terlambat/kurang 1 hari. Ini alat bantu riset, bukan rekomendasi beli/jual.</li>
+  </ul>
+  <h2>Perbarui data</h2>
+  <p>Klik dua kali <code>Buka Watchlist ARA.bat</code> (unduh ±2 menit), atau <code>py watchlist_ara.py</code>. Tanpa unduh: <code>py watchlist_ara.py --no-fetch</code>. Ubah filter likuiditas: <code>--minval 5e8</code>.</p>
+  </div>
+</section>
+</main>
+<aside class="drawer" id="drawer"></aside>
+
+<script>
+const D=/*__DATA__*/null;
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const nf=new Intl.NumberFormat('id-ID');
+const pct=(x,d=1)=>x==null||isNaN(x)?'–':(x*100).toFixed(d).replace('.',',')+'%';
+const sgn=(x,d=1)=>x==null||isNaN(x)?'–':(x>0?'+':'')+pct(x,d);
+const num=(x,d=0)=>x==null||isNaN(x)?'–':x.toLocaleString('id-ID',{maximumFractionDigits:d,minimumFractionDigits:d});
+const rp=x=>x==null||isNaN(x)?'–':x>=1e12?num(x/1e12,1)+' T':x>=1e9?num(x/1e9,1)+' M':num(x/1e6,0)+' jt';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cls=x=>x>0?'up':x<0?'dn':'';
+const FE=Object.keys(D.label);
+const badge=k=>`<span class="b ${k==='ARA0'?'ara':D.grup[k]==='Indikator proyek'?'g1':'g2'}" title="${esc(D.label[k])}">${k}</span>`;
+const byKode=Object.fromEntries(D.kandidat.map(c=>[c.kode,c]));
+
+/* tema */
+(()=>{const t=store.get('ara_theme',null);if(t)document.documentElement.dataset.theme=t;
+$('#theme').onclick=()=>{const dark=matchMedia('(prefers-color-scheme: dark)').matches;const cur=document.documentElement.dataset.theme||(dark?'dark':'light');const n=cur==='dark'?'light':'dark';document.documentElement.dataset.theme=n;store.set('ara_theme',n)}})();
+
+/* header */
+$('#meta').innerHTML=`<span>Data sampai <b>${D.data_sampai}</b></span><span>IHSG <b>${num(D.ihsg.close,2)}</b> <span class="${cls(D.ihsg.chg)}">${sgn(D.ihsg.chg,2)}</span> · ${D.ihsg.atas_ma50?'di atas':'di bawah'} MA50</span><span>${D.n_saham} saham</span><span>Dibuat ${D.dibuat}</span>`;
+
+/* tabs */
+$$('#nav button').forEach(b=>b.onclick=()=>{$$('#nav button').forEach(x=>x.classList.toggle('on',x===b));$$('.tab').forEach(t=>t.classList.toggle('on',t.id==='t-'+b.dataset.t));store.set('ara_tab',b.dataset.t)});
+{const t=store.get('ara_tab','kand');const b=$(`#nav button[data-t="${t}"]`);if(b)b.click()}
+
+/* watchlist */
+let W=store.get('ara2026_watch',{});
+const saveW=()=>{store.set('ara2026_watch',W);$('#c-watch').textContent=Object.keys(W).length;};
+const toggleW=k=>{if(W[k])delete W[k];else W[k]={note:'',added:D.data_sampai,px:byKode[k]?.harga??null};saveW();renderKand();renderWatch();};
+
+/* tabel generik dengan sortir */
+function table(el,cols,rows,sortState,onRow){
+  const s=sortState;
+  if(s.k){const c=cols.find(c=>c.k===s.k);const f=c.v||(r=>r[c.k]);rows=[...rows].sort((a,b)=>{let x=f(a),y=f(b);if(x==null)return 1;if(y==null)return -1;return (x>y?1:x<y?-1:0)*s.d})}
+  el.innerHTML=`<thead><tr>${cols.map(c=>`<th class="${c.l?'l':''} ${s.k===c.k?'sorted':''}" data-k="${c.k}" title="${esc(c.t||'')}">${c.h}${s.k===c.k?(s.d>0?' ▲':' ▼'):''}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map((r,i)=>`<tr data-i="${i}">${cols.map(c=>`<td class="${c.l?'l':''}">${c.f?c.f(r):esc(r[c.k])}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${cols.length}" class="empty">Tidak ada data yang cocok dengan filter.</td></tr>`}</tbody>`;
+  el.querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;if(!k||k==='_')return;s.d=s.k===k?-s.d:-1;s.k=k;table(el,cols,rows,s,onRow)});
+  el.querySelectorAll('tbody tr[data-i]').forEach(tr=>tr.onclick=e=>{if(e.target.closest('button,textarea,input'))return;onRow&&onRow(rows[+tr.dataset.i])});
+  el.querySelectorAll('.star').forEach(b=>b.onclick=e=>{e.stopPropagation();toggleW(b.dataset.k)});
+}
+const starCell=r=>`<button class="star ${W[r.kode]?'on':''}" data-k="${r.kode}" title="Watchlist">${W[r.kode]?'★':'☆'}</button>`;
+const kodeCell=r=>`<span class="kode">${r.kode}</span> ${r.ara?'<span class="b ara">ARA'+(r.streak>1?' ×'+r.streak:'')+'</span>':''}<span class="nama">${esc(r.nama)}</span>`;
+const maxSk=Math.max(1,...D.kandidat.map(c=>c.skor));
+const CANDCOLS=[
+  {k:'_',h:'',f:starCell},
+  {k:'kode',h:'Kode',l:1,f:kodeCell},
+  {k:'papan',h:'Papan',l:1,f:r=>`<span class="b pp">${r.papan}</span>`},
+  {k:'harga',h:'Close',f:r=>num(r.harga)},
+  {k:'chg',h:'Chg',f:r=>`<span class="${cls(r.chg)}">${sgn(r.chg)}</span>`},
+  {k:'skor',h:'Skor ARA',t:'Σ log2(lift) indikator yang menyala',f:r=>`${num(r.skor,2)}<span class="bar" style="width:${Math.round(r.skor/maxSk*60)}px"></span>`},
+  {k:'p5',h:'Peluang ARA 5h',t:'Empiris 2026 untuk kelompok skor ini',f:r=>pct(r.p5)},
+  {k:'arapx_besok',h:'Harga ARA besok',f:r=>`${num(r.arapx_besok)} <span class="note">${sgn(r.ke_ara,0)}</span>`},
+  {k:'volx',h:'Vol ×avg20',f:r=>r.volx==null?'–':num(r.volx,1)+'×'},
+  {k:'val20',h:'Nilai trx 20h',f:r=>rp(r.val20)},
+  {k:'rsi14',h:'RSI14',f:r=>num(r.rsi14,0)},
+  {k:'ara2026',h:'ARA 2026',t:'Jumlah hari ARA sepanjang 2026',f:r=>r.ara2026?`<b>${r.ara2026}</b> <span class="note">${r.ara_terakhir.slice(5)}</span>`:'–'},
+  {k:'sinyal',h:'Indikator menyala',l:1,v:r=>r.sinyal.length,f:r=>r.sinyal.map(badge).join('')},
+];
+
+/* KANDIDAT */
+const req=new Set(store.get('ara_req',[]));
+$('#f-chips').innerHTML=FE.map(k=>`<span class="chip ${req.has(k)?'on':''}" data-k="${k}" title="${esc(D.label[k])}">${k}</span>`).join('');
+$$('#f-chips .chip').forEach(c=>c.onclick=()=>{const k=c.dataset.k;req.has(k)?req.delete(k):req.add(k);c.classList.toggle('on');store.set('ara_req',[...req]);renderKand()});
+['#f-q','#f-papan','#f-val','#f-px','#f-sk','#f-noara'].forEach(s=>$(s).addEventListener('input',renderKand));
+const sK={k:'skor',d:-1};
+function renderKand(){
+  const q=$('#f-q').value.trim().toUpperCase(),pap=$('#f-papan').value,mv=+$('#f-val').value,mp=+$('#f-px').value||0,ms=+$('#f-sk').value||0,noara=$('#f-noara').checked;
+  const rows=D.kandidat.filter(c=>(!q||c.kode.includes(q)||c.nama.toUpperCase().includes(q))&&(!pap||c.papan===pap)&&(c.val20||0)>=mv&&c.harga>=mp&&c.skor>=ms&&!(noara&&c.ara)&&[...req].every(k=>c.sinyal.includes(k)));
+  $('#c-kand').textContent=rows.length;
+  table($('#tb-kand'),CANDCOLS,rows,sK,openDrawer);
+}
+(()=>{const liq=D.kandidat.filter(c=>c.likuid);const araT=liq.filter(c=>c.ara).length;const hi=liq.filter(c=>c.skor>4&&!c.ara).length;const v=D.validasi.rows.find(r=>r.top===10);
+$('#kpis').innerHTML=`
+<div class="kpi"><div class="s">ARA hari ini (likuid)</div><div class="v">${araT}</div><div class="s">dari ${liq.length} saham likuid</div></div>
+<div class="kpi"><div class="s">Skor &gt; 4, belum ARA</div><div class="v">${hi}</div><div class="s">peluang ARA 5h ≈ ${pct(D.skor_bin.find(b=>b.b==='>4')?.p5)}</div></div>
+<div class="kpi"><div class="s">Peluang dasar ARA 5h</div><div class="v">${pct(D.base5)}</div><div class="s">semua saham likuid, 2026</div></div>
+<div class="kpi"><div class="s">Validasi top-10 harian</div><div class="v">${pct(v.p5)}</div><div class="s">kena ARA ≤5h · ${num(v.lift5,1)}× dasar (Jul–Nov, OOS)</div></div>
+<div class="kpi"><div class="s">Total ARA 2026</div><div class="v">${nf.format(D.events.length)}</div><div class="s">${new Set(D.events.map(e=>e.kode)).size} saham</div></div>`})();
+
+/* DRAWER */
+function spark(code){
+  const s=D.spark[code];if(!s)return '';
+  const [dt,c,a]=s,w=420,h=140,p=6,mn=Math.min(...c),mx=Math.max(...c),X=i=>p+i*(w-2*p)/(c.length-1||1),Y=v=>h-p-(v-mn)/((mx-mn)||1)*(h-2*p);
+  const path=c.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)).join('');
+  const dots=a.map((x,i)=>x?`<circle cx="${X(i)}" cy="${Y(c[i])}" r="3.5" fill="var(--ara)"><title>ARA ${dt[i]} · ${c[i]}</title></circle>`:'').join('');
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" style="display:block;margin:10px 0"><path d="${path}" fill="none" stroke="var(--acc)" stroke-width="1.8"/>${dots}</svg><div class="note">60 hari bursa terakhir (${dt[0]} → ${dt[dt.length-1]}) · titik merah = hari ARA · rentang ${num(mn)}–${num(mx)}</div>`;
+}
+function openDrawer(r){
+  const c=byKode[r.kode]||r;const ev=D.events.filter(e=>e.kode===r.kode);
+  $('#drawer').innerHTML=`<button class="btn x" onclick="document.getElementById('drawer').classList.remove('on')">✕</button>
+  <h3>${c.kode} ${starCell(c)}</h3><div class="note">${esc(c.nama)} · ${c.papan}</div>
+  ${spark(c.kode)}
+  <div class="kv">
+   <div><span>Close ${D.data_sampai}</span>${num(c.harga)} <b class="${cls(c.chg)}">${sgn(c.chg)}</b></div>
+   <div><span>Status</span>${c.ara?'<b style="color:var(--ara)">ARA'+(c.streak>1?' hari ke-'+c.streak:'')+'</b> (harga ARA '+num(c.arapx_hari_ini)+')':'Belum ARA (batas hari ini '+num(c.arapx_hari_ini)+')'}</div>
+   <div><span>Harga ARA besok</span>${num(c.arapx_besok)} (${sgn(c.ke_ara,0)})</div>
+   <div><span>Skor ARA · peluang 5h</span>${num(c.skor,2)} · ${pct(c.p5)}</div>
+   <div><span>Volume vs avg20</span>${c.volx==null?'–':num(c.volx,1)+'×'}</div>
+   <div><span>Nilai trx rata-rata 20h</span>Rp ${rp(c.val20)}</div>
+   <div><span>RSI14 / RSI5</span>${num(c.rsi14,0)} / ${num(c.rsi5,0)}</div>
+   <div><span>ATR14 / jarak ke high 20h</span>${pct(c.atrp)} / ${sgn(c.dhh20)}</div>
+  </div>
+  <b>Indikator menyala (${c.sinyal.length})</b>
+  <ul class="sig">${c.sinyal.map(k=>`<li>${badge(k)} ${esc(D.label[k])} <span class="note">· bobot ${num(D.bobot[k]||0,2)}</span></li>`).join('')||'<li class="note">Tidak ada</li>'}</ul>
+  ${W[c.kode]?`<b>Catatan watchlist</b><textarea rows="3" id="dnote">${esc(W[c.kode].note)}</textarea>`:''}
+  <b>Riwayat ARA 2026 (${ev.length})</b>
+  <ul class="sig">${ev.slice(0,25).map(e=>`<li>${e.tgl} · ${num(e.harga)} ${sgn(e.chg)}${e.streak>1?' · beruntun ke-'+e.streak:''}${e.ret5!=null?' · 5h kemudian <span class="'+cls(e.ret5)+'">'+sgn(e.ret5)+'</span>':''}</li>`).join('')||'<li class="note">Belum pernah ARA di 2026</li>'}</ul>`;
+  $('#drawer').classList.add('on');
+  $('#drawer .star').onclick=()=>{toggleW(c.kode);openDrawer(c)};
+  const dn=$('#dnote');if(dn)dn.oninput=()=>{W[c.kode].note=dn.value;saveW()};
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#drawer').classList.remove('on')});
+
+/* WATCHLIST */
+const sW={k:'skor',d:-1};
+function renderWatch(){
+  const rows=Object.keys(W).map(k=>({...(byKode[k]||{kode:k,nama:'(tidak ada data terbaru)',papan:'–',sinyal:[],skor:0}),_w:W[k]}));
+  const cols=[CANDCOLS[0],CANDCOLS[1],CANDCOLS[3],CANDCOLS[4],
+   {k:'sejak',h:'Sejak ditambah',v:r=>r._w.px&&r.harga?r.harga/r._w.px-1:null,f:r=>r._w.px&&r.harga?`<span class="${cls(r.harga/r._w.px-1)}">${sgn(r.harga/r._w.px-1)}</span> <span class="note">${r._w.added}</span>`:'–'},
+   CANDCOLS[5],CANDCOLS[6],CANDCOLS[7],CANDCOLS[11],CANDCOLS[12],
+   {k:'note',h:'Catatan',l:1,v:r=>r._w.note,f:r=>`<input type="text" class="wn" data-k="${r.kode}" value="${esc(r._w.note)}" placeholder="catatan…" style="width:180px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px 6px;color:var(--ink)">`}];
+  table($('#tb-watch'),cols,rows,sW,openDrawer);
+  if(!rows.length)$('#tb-watch tbody').innerHTML='<tr><td class="empty" colspan="11">Watchlist masih kosong. Klik ☆ di tab Kandidat atau tambahkan kode di atas.</td></tr>';
+  $$('.wn').forEach(i=>i.oninput=()=>{W[i.dataset.k].note=i.value;store.set('ara2026_watch',W)});
+}
+$('#w-addb').onclick=()=>{$('#w-add').value.toUpperCase().split(/[\s,;]+/).filter(Boolean).forEach(k=>{if(!W[k])W[k]={note:'',added:D.data_sampai,px:byKode[k]?.harga??null}});$('#w-add').value='';saveW();renderWatch();renderKand()};
+$('#w-add').onkeydown=e=>{if(e.key==='Enter')$('#w-addb').click()};
+$('#w-clear').onclick=()=>{if(confirm('Kosongkan seluruh watchlist?')){W={};saveW();renderWatch();renderKand()}};
+$('#w-csv').onclick=()=>{const h=['kode','nama','papan','close','chg','skor','peluang_ara_5h','harga_ara_besok','ara_2026','indikator','ditambah','harga_saat_ditambah','catatan'];
+ const L=[h.join(';')].concat(Object.keys(W).map(k=>{const c=byKode[k]||{};return [k,c.nama,c.papan,c.harga,c.chg,c.skor,c.p5,c.arapx_besok,c.ara2026,(c.sinyal||[]).join(' '),W[k].added,W[k].px,W[k].note].map(x=>`"${String(x??'').replace(/"/g,'""')}"`).join(';')}));
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+L.join('\n')],{type:'text/csv'}));a.download=`watchlist_ara_${D.data_sampai}.csv`;a.click()};
+
+/* RIWAYAT */
+(()=>{const m=D.bulanan,mx=Math.max(...m.map(x=>x.n)),w=520,h=190,bw=(w-30)/m.length;
+const BL=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+$('#ch-month').innerHTML=`<svg viewBox="0 0 ${w} ${h}" width="100%">${m.map((x,i)=>{const bh=(h-40)*x.n/mx,X=20+i*bw;return `<rect x="${X+3}" y="${h-22-bh}" width="${bw-6}" height="${bh}" rx="3" fill="var(--ara)" opacity=".8"><title>${x.bulan}: ${x.n} ARA, ${x.saham} saham</title></rect><text x="${X+bw/2}" y="${h-22-bh-4}" font-size="11" text-anchor="middle" fill="var(--ink)">${x.n}</text><text x="${X+bw/2}" y="${h-6}" font-size="11" text-anchor="middle" fill="var(--mute)">${BL[+x.bulan.slice(5)-1]}</text>`}).join('')}</svg><div class="note">Nov 2026 baru sampai ${D.data_sampai}.</div>`;
+const cnt={};D.events.forEach(e=>{cnt[e.kode]=(cnt[e.kode]||0)+1});const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,15),t0=top[0]?.[1]||1;
+$('#top-ara').innerHTML=top.map(([k,n])=>`<div style="display:flex;align-items:center;gap:8px;margin:3px 0;cursor:pointer" onclick="openDrawer(byKode['${k}']||{kode:'${k}',nama:'',papan:'',sinyal:[]})"><span class="kode" style="width:52px">${k}</span><span class="bar" style="margin:0;width:${n/t0*70}%;background:var(--ara)"></span><span>${n}</span></div>`).join('');
+$('#h-m').innerHTML+=m.map(x=>`<option>${x.bulan}</option>`).join('');})();
+['#h-q','#h-m','#h-papan','#h-liq','#h-first'].forEach(s=>$(s).addEventListener('input',renderHist));
+const sH={k:'tgl',d:-1};
+function renderHist(){
+  const q=$('#h-q').value.trim().toUpperCase(),m=$('#h-m').value,pap=$('#h-papan').value,liq=$('#h-liq').checked,first=$('#h-first').checked;
+  const rows=D.events.filter(e=>(!q||e.kode.includes(q))&&(!m||e.tgl.startsWith(m))&&(!pap||e.papan===pap)&&(!liq||e.likuid)&&(!first||e.streak===1));
+  $('#c-hist').textContent=D.events.length;
+  table($('#tb-hist'),[
+    {k:'tgl',h:'Tanggal',l:1},{k:'kode',h:'Kode',l:1,f:r=>`<span class="kode">${r.kode}</span>`},{k:'papan',h:'Papan',l:1,f:r=>`<span class="b pp">${r.papan}</span>`},
+    {k:'harga',h:'Close',f:r=>num(r.harga)},{k:'chg',h:'Chg',f:r=>`<span class="up">${sgn(r.chg)}</span>`},
+    {k:'streak',h:'ARA ke-',f:r=>r.streak>1?`<b>${r.streak}</b>`:'1'},{k:'volx',h:'Vol ×avg20',f:r=>r.volx==null?'–':num(r.volx,1)+'×'},
+    {k:'val20',h:'Nilai trx 20h',f:r=>rp(r.val20)},{k:'pre_skor',h:'Skor H-1',f:r=>num(r.pre_skor,2)},
+    {k:'ret5',h:'Close +5h',t:'Perubahan close 5 hari bursa setelah ARA',f:r=>`<span class="${cls(r.ret5)}">${sgn(r.ret5)}</span>`},
+    {k:'pre',h:'Indikator H-1',l:1,v:r=>r.pre.length,f:r=>r.pre.map(badge).join('')}],rows,sH,r=>openDrawer(byKode[r.kode]||{kode:r.kode,nama:'',papan:r.papan,sinyal:[]}));
+}
+
+/* STATISTIK */
+(()=>{const v=D.validasi;
+$('#val').innerHTML=`<div class="note">Bobot skor dihitung <b>hanya dari Jan–Jun 2026</b>. Lalu setiap hari ${v.dari} s.d. ${v.sampai} diambil N saham likuid dengan skor tertinggi dan dicek apakah ARA dalam 1 / 5 hari bursa berikutnya. Peluang dasar periode ini: ${pct(v.base1,2)} (1h) dan ${pct(v.base5)} (5h), ${nf.format(v.n)} saham-hari.</div>
+<div class="tw" style="margin-top:10px"><table><thead><tr><th class="l">Daftar</th><th>Saham-hari</th><th>ARA besok</th><th>ARA ≤5h</th><th>× dasar</th><th>Naik maks 5h (median)</th></tr></thead><tbody>${v.rows.map(r=>`<tr><td class="l">Top ${r.top} per hari</td><td>${nf.format(r.n)}</td><td>${pct(r.p1)}</td><td><b>${pct(r.p5)}</b></td><td>${num(r.lift5,1)}×</td><td>${pct(r.mx5)}</td></tr>`).join('')}</tbody></table></div>
+<div class="note" style="margin-top:8px">Artinya: dari 10 saham teratas tiap hari, rata-rata ±${num(v.rows[1].p5*10,1)} saham benar-benar ARA dalam 5 hari. Sebagian besar tetap tidak ARA.</div>`;
+$('#lift-note').innerHTML=`Saham-hari likuid 2026 (nilai trx 20h ≥ Rp${rp(D.minval)}, harga &gt; ${D.minpx}): ${nf.format(D.nobs)}. Peluang dasar ARA besok ${pct(D.base1,2)}, ARA ≤5 hari ${pct(D.base5,2)}. Bobot = log2(lift 5h) bila &gt; 0.`;
+const mxl=Math.max(...D.lift.map(r=>r.lift5||0));
+table($('#tb-lift'),[
+  {k:'kode',h:'Kode',l:1,f:r=>badge(r.kode)},{k:'label',h:'Indikator',l:1},{k:'grup',h:'Grup',l:1,f:r=>`<span class="note">${r.grup}</span>`},
+  {k:'n',h:'Sinyal',f:r=>nf.format(r.n)},{k:'saham',h:'Saham'},{k:'p1',h:'ARA besok',f:r=>pct(r.p1,2)},{k:'lift1',h:'× dasar',f:r=>num(r.lift1,1)+'×'},
+  {k:'p5',h:'ARA ≤5h',f:r=>pct(r.p5)},{k:'lift5',h:'Lift 5h',f:r=>`${num(r.lift5,1)}×<span class="bar" style="width:${Math.round((r.lift5||0)/mxl*70)}px"></span>`},
+  {k:'mx5',h:'Naik maks 5h',t:'Median kenaikan high tertinggi 5 hari ke depan',f:r=>pct(r.mx5)},
+  {k:'bobot',h:'Bobot skor',v:r=>D.bobot[r.kode],f:r=>num(D.bobot[r.kode],2)}],D.lift,{k:'lift5',d:-1});
+table($('#tb-bin'),[{k:'b',h:'Skor',l:1},{k:'n',h:'Saham-hari',f:r=>nf.format(r.n)},{k:'p1',h:'ARA besok',f:r=>pct(r.p1,2)},{k:'p5',h:'ARA ≤5h',f:r=>pct(r.p5)},{k:'mx5',h:'Naik maks 5h',f:r=>pct(r.mx5)}],D.skor_bin,{k:null,d:1});
+const ps=Object.entries(D.pre_share).filter(([k])=>k!=='ARA0').sort((a,b)=>b[1]-a[1]);
+$('#pre').innerHTML=ps.map(([k,v])=>`<div style="display:flex;align-items:center;gap:8px;margin:4px 0"><span style="width:56px">${badge(k)}</span><span class="bar" style="margin:0;width:${v*100*1.4}%"></span><span>${pct(v,0)}</span></div>`).join('');
+})();
+
+saveW();renderKand();renderWatch();renderHist();
+</script>
+</body>
+</html>
